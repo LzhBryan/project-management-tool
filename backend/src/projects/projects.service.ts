@@ -1,17 +1,19 @@
 import { BadRequestException, Inject, Injectable } from "@nestjs/common"
-import { CreateProjectDto } from "./dto/create-project.dto"
-import { UpdateProjectDto } from "./dto/update-project.dto"
-import { NeonHttpDatabase } from "drizzle-orm/neon-http"
-import { DATABASE_CONNECTION } from "src/drizzle/drizzle.constants"
-import { Project, projects } from "drizzle/schema/projects"
 import { count, eq, getTableColumns } from "drizzle-orm"
+import { NeonHttpDatabase } from "drizzle-orm/neon-http"
+import { projects } from "drizzle/schema/projects"
 import { tasks } from "drizzle/schema/tasks"
+import { DATABASE_CONNECTION } from "src/drizzle/drizzle.constants"
+import { CreateProjectDto } from "./dto/create-project.dto"
+import { GetProjectResponseDto } from "./dto/get-project-response.dto"
+import { GetProjectsResponseDto } from "./dto/get-projects-response.dto"
+import { UpdateProjectDto } from "./dto/update-project.dto"
 
 @Injectable()
 export class ProjectsService {
   constructor(@Inject(DATABASE_CONNECTION) private readonly db: NeonHttpDatabase) {}
 
-  async create(createProjectDto: CreateProjectDto, userId: number): Promise<string> {
+  async create(createProjectDto: CreateProjectDto, userId: number) {
     const { name, colour } = createProjectDto
     const [{ name: newProjectName }] = await this.db
       .insert(projects)
@@ -20,7 +22,7 @@ export class ProjectsService {
     return newProjectName
   }
 
-  async findAll(userId: number): Promise<Array<Project & { taskCount: number }>> {
+  async findAll(userId: number): Promise<GetProjectsResponseDto[]> {
     return await this.db
       .select({ ...getTableColumns(projects), taskCount: count(tasks.id) })
       .from(projects)
@@ -29,7 +31,7 @@ export class ProjectsService {
       .groupBy(projects.id)
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<GetProjectResponseDto> {
     const [project] = await this.db.select({ projectName: projects.name }).from(projects).where(eq(projects.id, id))
 
     if (!project) {

@@ -1,5 +1,6 @@
-import { IsHexColor, IsNotEmpty, IsNumber, IsOptional } from "class-validator"
-import { ColoursType } from "drizzle/schema/projects"
+import { ApiProperty } from "@nestjs/swagger"
+import { IsHexColor, IsNotEmpty, IsNumber } from "class-validator"
+import { colours, ColoursType } from "drizzle/schema/projects"
 
 export class UpdateProjectDto {
   @IsNumber()
@@ -8,7 +9,7 @@ export class UpdateProjectDto {
   @IsNotEmpty({ message: "Please provide name field" })
   name: string
 
-  @IsOptional()
+  @ApiProperty({ enum: colours })
   @IsHexColor()
-  colour: ColoursType | undefined
+  colour?: ColoursType
 }

@@ -1,5 +1,5 @@
-import { IsNumber, IsNotEmpty, IsOptional, IsDate, IsEnum } from "class-validator"
-import { PriorityEnum, Priority } from "drizzle/schema/tasks"
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional } from "class-validator"
+import { Priority, PriorityEnum } from "drizzle/schema/tasks"
 
 export class UpdateTaskDto {
   @IsNumber()
@@ -9,15 +9,15 @@ export class UpdateTaskDto {
   name: string
 
   @IsOptional()
-  description: string
+  description: string | null
 
   @IsDate()
-  dueDate: string
+  dueDate: Date | null
 
   @IsEnum(PriorityEnum)
-  priority: Priority
+  priority: Priority | null
 
   @IsNumber()
   @IsNotEmpty({ message: "Please provide the associated project id" })
-  projectId: number
+  projectId: number | null
 }

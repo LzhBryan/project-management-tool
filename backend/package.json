@@ -1,5 +1,5 @@
 {
-  "name": "to-do-list-api",
+  "name": "project-management-tool-api",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -22,7 +22,7 @@
     "updatedb": "drizzle-kit push",
     "update:test_db": "cross-env NODE_ENV=TEST drizzle-kit push",
     "studio": "drizzle-kit studio",
-    "generate_api_client": "npx @openapitools/openapi-generator-cli generate -i http://localhost:5000/api-json -g typescript-nestjs -o ../frontend/src/openapi"
+    "generate_api_client": "npx @openapitools/openapi-generator-cli generate -i http://localhost:5000/api-json -g typescript-axios -o ../frontend/src/apiClient --additional-properties=withSeparateModelsAndApi=true,apiPackage=api,modelPackage=model"
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4",
@@ -34,6 +34,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.3",
     "@nestjs/swagger": "^11.2.0",
+    "@radix-ui/react-collapsible": "^1.1.11",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",

@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from "@nestjs/common"
-import { UsersService } from "src/users/users.service"
-import { CreateUserDto } from "src/users/dto/create-user.dto"
+import { JwtService } from "@nestjs/jwt"
 import * as bcrypt from "bcrypt"
 import { User } from "drizzle/schema/users"
-import { JwtService } from "@nestjs/jwt"
 import { Response } from "express"
+import { CreateUserDto } from "src/users/dto/create-user.dto"
+import { UsersService } from "src/users/users.service"
 import { AuthenticatedUser } from "./strategies/local.strategy"
 
 export interface TokenPayload {
@@ -53,8 +53,6 @@ export class AuthService {
     res.clearCookie("accessToken")
     res.clearCookie("refreshToken")
   }
-
-  deleteUser() {}
 
   attachCookiesToResponse(res: Response, payload: TokenPayload) {
     const accessToken = this.jwtService.sign(payload, {
