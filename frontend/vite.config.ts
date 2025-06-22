@@ -19,10 +19,4 @@ export default defineConfig(() => ({
   server: {
     port: 3000,
   },
-  test: {
-    globals: true,
-    environment: "jsdom",
-    setupFiles: ["./src/vitest-setup.ts"],
-    clearMocks: true,
-  },
 }))

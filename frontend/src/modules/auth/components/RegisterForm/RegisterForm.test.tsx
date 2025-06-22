@@ -4,14 +4,14 @@ import userEvent from "@testing-library/user-event"
 import { renderComponent } from "@/tests/testUtils"
 import { RegisterForm } from "./RegisterForm"
 
-const renderRegisterForm = () => {
-  renderComponent(<RegisterForm />)
+const renderRegisterForm = async () => {
+  await renderComponent(<RegisterForm />)
   return { user: userEvent.setup() }
 }
 
 describe("Register form", () => {
-  test("register form render", () => {
-    renderRegisterForm()
+  test("register form render", async () => {
+    await renderRegisterForm()
 
     expect(screen.getByRole("form", { name: "Register user" })).toBeVisible()
     expect(screen.getByLabelText("Name")).toBeVisible()
@@ -26,7 +26,7 @@ describe("Register form", () => {
   })
 
   test("show error message when email entered is not valid", async () => {
-    const { user } = renderRegisterForm()
+    const { user } = await renderRegisterForm()
 
     await user.type(screen.getByRole("textbox", { name: "Name" }), "name")
     await user.type(screen.getByRole("textbox", { name: "Email" }), "invalid@email")
@@ -37,7 +37,7 @@ describe("Register form", () => {
   })
 
   test("show error message when password entered is less than 6 characters", async () => {
-    const { user } = renderRegisterForm()
+    const { user } = await renderRegisterForm()
 
     await user.type(screen.getByRole("textbox", { name: "Name" }), "name")
     await user.type(screen.getByRole("textbox", { name: "Email" }), "user@gmail.com")

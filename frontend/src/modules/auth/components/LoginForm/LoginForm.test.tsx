@@ -1,5 +1,5 @@
-import { API_BASE_URL } from "@/mocks/constants"
-import { server } from "@/mocks/node"
+import { API_BASE_URL } from "@/tests/mocks/constants"
+import { server } from "@/tests/mocks/node"
 import { renderComponent } from "@/tests/testUtils"
 import { screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
@@ -16,8 +16,8 @@ vi.mock(import("@tanstack/react-router"), async importOriginal => {
   }
 })
 
-const renderLoginForm = () => {
-  renderComponent(<LoginForm />)
+async function renderLoginForm() {
+  await renderComponent(<LoginForm />)
   return { user: userEvent.setup() }
 }
 
@@ -28,7 +28,7 @@ const registerPageLink = () => screen.getByRole("link", { name: "Sign up here" }
 
 describe("Login form", () => {
   test("login form render", async () => {
-    renderLoginForm()
+    await renderLoginForm()
 
     expect(screen.getByRole("form", { name: "Login form" })).toBeVisible()
     expect(emailField()).toBeVisible()
@@ -41,7 +41,7 @@ describe("Login form", () => {
   })
 
   test("show error message when email entered is not valid", async () => {
-    const { user } = renderLoginForm()
+    const { user } = await renderLoginForm()
 
     await user.type(emailField(), "invalid@email")
     await user.type(passwordField(), "password")
@@ -51,7 +51,7 @@ describe("Login form", () => {
   })
 
   test("show error message when password entered is less than 6 characters", async () => {
-    const { user } = renderLoginForm()
+    const { user } = await renderLoginForm()
 
     await user.type(emailField(), "user@gmail.com")
     await user.type(passwordField(), "12345")
@@ -67,7 +67,7 @@ describe("Login form", () => {
       }),
     )
 
-    const { user } = renderLoginForm()
+    const { user } = await renderLoginForm()
 
     await user.type(emailField(), "user@gmail.com")
     await user.type(passwordField(), "123456")
@@ -77,7 +77,7 @@ describe("Login form", () => {
   })
 
   test("redirects user to today page if user can login successfully", async () => {
-    const { user } = renderLoginForm()
+    const { user } = await renderLoginForm()
 
     await user.type(emailField(), "asdasd@gmail.com")
     await user.type(passwordField(), "123456")
@@ -87,7 +87,7 @@ describe("Login form", () => {
   })
 
   test("redirects user to register page if user correctly", async () => {
-    const { user } = renderLoginForm()
+    const { user } = await renderLoginForm()
     await user.click(registerPageLink())
   })
 })

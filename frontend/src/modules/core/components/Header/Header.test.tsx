@@ -6,8 +6,8 @@ import { Header } from "./Header"
 const toggleSidebarBtn = () => screen.getByRole("button", { name: "Toggle sidebar" })
 
 describe("Header component", () => {
-  test("rendering", () => {
-    renderComponent(
+  test("rendering", async () => {
+    await renderComponent(
       <SidebarProvider>
         <Header />
       </SidebarProvider>,
