@@ -1,20 +1,20 @@
 import { useToast } from "@/modules/core/hooks/useToast"
-import { authAxios } from "@/modules/core/lib/axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
-import { IProject } from "../components/project.types"
+import { CreateProjectDto } from "@/apiClient"
+import { projectsApi } from "@/modules/api"
 
 export function useCreateProject() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (newProject: Omit<IProject, "id" | "count">) => {
-      return authAxios.post("api/projects", newProject)
+    mutationFn: async (newProject: CreateProjectDto) => {
+      return await projectsApi.projectsControllerCreate(newProject)
     },
-    onSuccess: async response => {
+    onSuccess: async ({ data }) => {
       await queryClient.invalidateQueries({ queryKey: ["projects"] })
-      toast({ description: `New project ${response.data.projectName} has been created` })
+      toast({ description: `New project ${data.newProjectName} has been created` })
     },
   })
 }

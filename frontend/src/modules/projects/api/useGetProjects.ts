@@ -1,18 +1,18 @@
-import { authAxios } from "@core/lib/axios"
 import { useSuspenseQuery } from "@tanstack/react-query"
 
-import { ProjectsData } from "../components/project.types"
+import { GetProjectsResponseDto } from "@/apiClient"
+import { projectsApi } from "../../api"
 
 export const projectsQueryOptions = {
   queryKey: ["projects"],
   queryFn: async function () {
-    const response = await authAxios.get("api/projects")
+    const response = await projectsApi.projectsControllerFindAll()
     return response.data
   },
   retry: false,
 }
 
 export function useGetProjects() {
-  const { data, error, isFetching } = useSuspenseQuery<ProjectsData>(projectsQueryOptions)
+  const { data, error, isFetching } = useSuspenseQuery<GetProjectsResponseDto[]>(projectsQueryOptions)
   return { data, error, isFetching }
 }
