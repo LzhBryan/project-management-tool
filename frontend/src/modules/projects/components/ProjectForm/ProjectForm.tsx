@@ -9,39 +9,35 @@ import { Button } from "@ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@ui/form"
 import { Input } from "@ui/input"
 
-import { IProject } from "../project.types"
+import { CreateProjectDtoColourEnum, UpdateProjectDto } from "@/apiClient"
 
 const projectFormSchema = z
   .object({
     name: z.string().min(1, { message: "Name must be at least 1 character" }),
-    colour: z.string().length(7).regex(/^#/, { message: "Color must be in hex codes format" }),
+    colour: z.custom<CreateProjectDtoColourEnum>(),
   })
   .strict()
 
 interface ProjectFormProps {
   setOpenDialog: (openDialog: boolean) => void
-  projectToUpdate?: IProject
-  flag: "create" | "update"
+  project?: UpdateProjectDto
 }
 
 export function ProjectForm(projectFormProps: ProjectFormProps) {
-  const { setOpenDialog, projectToUpdate, flag } = projectFormProps
+  const { setOpenDialog, project } = projectFormProps
   const { mutate: createProjectMutate } = useCreateProject()
   const { mutate: updateProjectMutate } = useUpdateProject()
 
   const form = useForm<z.infer<typeof projectFormSchema>>({
     resolver: zodResolver(projectFormSchema),
-    defaultValues: {
-      name: flag === "create" ? "" : projectToUpdate?.name,
-      colour: flag === "create" ? colourChoices[0].colour : projectToUpdate?.colour,
-    },
+    defaultValues: { name: project?.name ?? "", colour: project?.colour ?? colourChoices[0].colour },
   })
 
   function onSubmit(values: z.infer<typeof projectFormSchema>) {
-    if (flag === "create") {
-      createProjectMutate(values)
+    if (project) {
+      updateProjectMutate({ ...values, id: project.id })
     } else {
-      updateProjectMutate({ ...values, id: projectToUpdate!.id })
+      createProjectMutate(values)
     }
     setOpenDialog(false)
   }
@@ -75,7 +71,7 @@ export function ProjectForm(projectFormProps: ProjectFormProps) {
           )}
         />
         <Button className="mt-2" type="submit">
-          {flag === "create" ? "Add project" : "Update project"}
+          {project ? "Update project" : "Add project"}
         </Button>
       </form>
     </Form>

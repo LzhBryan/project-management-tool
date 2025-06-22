@@ -27,4 +27,5 @@ authAxios.interceptors.response.use(
   },
 )
 
-export { axios, authAxios }
+export { authAxios, axios }
+

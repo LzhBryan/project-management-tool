@@ -7,7 +7,6 @@ import { Button } from "@ui/button"
 import { Skeleton } from "@ui/skeleton"
 
 import { DialogWrapper } from "@core/components/DialogWrapper"
-import { IProject } from "../project.types"
 import { Project } from "../Project/Project"
 import { ProjectForm } from "../ProjectForm/ProjectForm"
 
@@ -28,7 +27,7 @@ export function Projects({ showProjectCount = false }: { showProjectCount?: bool
         fallback={
           <ul className="flex flex-col gap-y-4" aria-label="Project list">
             {[1, 2, 3].map(i => (
-              <li key={i} className="flex items-center gap-x-3">
+              <li key={i} className="flex items-center gap-x-3" data-testid="project-skeleton">
                 <Skeleton className="h-[10px] w-[10px]" />
                 <Skeleton className="h-[30px] w-full" />
               </li>
@@ -43,10 +42,8 @@ export function Projects({ showProjectCount = false }: { showProjectCount?: bool
 }
 
 function ProjectList({ showProjectCount = false }: { showProjectCount?: boolean }) {
-  const { data, error, isFetching } = useGetProjects()
-  const { projects, count } = data
+  const { data: projects, error, isFetching } = useGetProjects()
   const [openDialog, setOpenDialog] = useState(false)
-  const [currentActiveProject, setCurrentActiveProject] = useState(-1)
 
   if (error && !isFetching) {
     throw error
@@ -55,7 +52,7 @@ function ProjectList({ showProjectCount = false }: { showProjectCount?: boolean 
   if (!projects.length) {
     return (
       <div className="flex flex-col gap-y-4">
-        <p className="text-base">You have no projects yet</p>;
+        <p className="text-base">You have no projects yet</p>
         <DialogWrapper
           open={openDialog}
           onOpenChange={setOpenDialog}
@@ -63,7 +60,7 @@ function ProjectList({ showProjectCount = false }: { showProjectCount?: boolean 
           title={"Add project"}
           description={"Add a project with name and color"}
         >
-          <ProjectForm flag="create" setOpenDialog={setOpenDialog} />
+          <ProjectForm setOpenDialog={setOpenDialog} />
         </DialogWrapper>
       </div>
     )
@@ -71,15 +68,10 @@ function ProjectList({ showProjectCount = false }: { showProjectCount?: boolean 
 
   return (
     <>
-      {showProjectCount && <p className="mb-4">{`${count} projects`}</p>}
-      <ul className="flex flex-col" aria-label="Project list">
-        {projects.map((project: IProject & { taskCount: number }) => (
-          <Project
-            key={project.id}
-            project={project}
-            currentActiveProject={currentActiveProject}
-            setCurrentActiveProject={setCurrentActiveProject}
-          />
+      {showProjectCount && <p className="mb-4">{`${projects.length} projects`}</p>}
+      <ul className="flex flex-col gap-y-1" aria-label="Project list">
+        {projects.map(project => (
+          <Project key={project.id} project={project} />
         ))}
       </ul>
     </>

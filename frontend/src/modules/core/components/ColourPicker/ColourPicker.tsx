@@ -1,11 +1,11 @@
 import { ForwardedRef, forwardRef } from "react"
 import { useController, UseControllerProps } from "react-hook-form"
 
+import { CreateProjectDtoColourEnum } from "@/apiClient"
 import { FormControl, FormItem, FormLabel } from "@ui/form"
 import { RadioGroup, RadioGroupItem } from "@ui/radio-group"
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const colourChoices = [
+export const colourChoices: Array<{ name: string; colour: CreateProjectDtoColourEnum }> = [
   { name: "Berry red", colour: "#b8255f" },
   { name: "Red", colour: "#cf473a" },
   { name: "Orange", colour: "#c77100" },

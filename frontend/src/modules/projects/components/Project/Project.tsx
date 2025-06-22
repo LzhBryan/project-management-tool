@@ -6,19 +6,14 @@ import { Button } from "@ui/button"
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@ui/context-menu"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@ui/dropdown-menu"
 
+import { GetProjectsResponseDto } from "@/apiClient"
+import { useSidebarContext } from "@/modules/core/components/AppSidebar/SidebarContext"
 import { DialogWrapper } from "@core/components/DialogWrapper"
 import { useSidebar } from "@ui/sidebar"
 import { useDeleteProject } from "../../api/useDeleteProject"
-import { IProject } from "../project.types"
 import { ProjectForm } from "../ProjectForm/ProjectForm"
 
-interface ProjectProps {
-  project: IProject & { taskCount: number }
-  currentActiveProject: number
-  setCurrentActiveProject: (id: number) => void
-}
-
-export function Project({ project, currentActiveProject, setCurrentActiveProject }: ProjectProps) {
+export function Project({ project }: { project: GetProjectsResponseDto }) {
   const { isMobile, setOpenMobile } = useSidebar()
   const [showProjectSettings, setShowProjectSettings] = useState(false)
   const [openProjectSettings, setOpenProjectSettings] = useState(false)
@@ -26,8 +21,12 @@ export function Project({ project, currentActiveProject, setCurrentActiveProject
   const [openDeleteProjectDialog, setOpenDeleteProjectDialog] = useState(false)
   const [openEditProjectContextDialog, setOpenEditProjectContextDialog] = useState(false)
   const [openDeleteProjectContextDialog, setOpenDeleteProjectContextDialog] = useState(false)
+  const { activeSidebarItem, setActiveSidebarItem } = useSidebarContext()
+
   const { mutate: deleteProjectMutate } = useDeleteProject()
   const taskCountRef = useRef<HTMLSpanElement>(null)
+
+  const { id, name, taskCount, colour } = project
 
   useEffect(() => {
     if (taskCountRef.current) {
@@ -48,7 +47,7 @@ export function Project({ project, currentActiveProject, setCurrentActiveProject
   }
 
   const handleLinkClick = () => {
-    setCurrentActiveProject(Number(project.id))
+    setActiveSidebarItem(`projectId${id}`)
     if (isMobile) {
       setOpenMobile(false)
     }
@@ -58,9 +57,9 @@ export function Project({ project, currentActiveProject, setCurrentActiveProject
     <Button
       asChild
       variant="ghost"
-      className={`block h-full p-2 ${currentActiveProject === Number(project.id) ? "bg-slate-800" : ""}`}
+      className={`block h-full p-1 pl-4 ${activeSidebarItem === `projectId${id}` ? "bg-slate-300 hover:bg-slate-300 dark:bg-slate-800 hover:dark:bg-slate-800" : ""}`}
     >
-      <li key={project.id}>
+      <li key={id}>
         <ContextMenu modal={false}>
           <ContextMenuTrigger asChild>
             <div
@@ -69,13 +68,14 @@ export function Project({ project, currentActiveProject, setCurrentActiveProject
               onMouseLeave={handleMouseLeave}
             >
               <Link
-                to={`/app/projects/${project.id}`}
-                key={project.id}
+                to="/app/projects/$projectId"
+                params={{ projectId: id.toString() }}
+                key={id}
                 className="flex flex-1 items-center gap-x-5 p-2"
                 onClick={handleLinkClick}
               >
-                <Circle color={project.colour} fill={project.colour} size={12} />
-                <span className="text-[clamp(0.95rem,0.9071rem+0.2143vw,1.1rem)]">{project.name}</span>
+                <Circle color={colour} fill={colour} size={12} />
+                <span className="text-[clamp(0.95rem,0.9071rem+0.2143vw,1.1rem)]">{name}</span>
               </Link>
               <DropdownMenu open={openProjectSettings} onOpenChange={setOpenProjectSettings}>
                 <DropdownMenuTrigger asChild>
@@ -85,7 +85,7 @@ export function Project({ project, currentActiveProject, setCurrentActiveProject
                     </Button>
                   ) : (
                     <span ref={taskCountRef} className="px-3 py-2">
-                      {project.taskCount}
+                      {taskCount}
                     </span>
                   )}
                 </DropdownMenuTrigger>
@@ -163,19 +163,19 @@ export function Project({ project, currentActiveProject, setCurrentActiveProject
           title={"Edit project"}
           description={"Edit project name and color"}
         >
-          <ProjectForm projectToUpdate={project} flag="update" setOpenDialog={setOpenEditProjectDialog} />
+          <ProjectForm project={project} setOpenDialog={setOpenEditProjectDialog} />
         </DialogWrapper>
         <DialogWrapper
           open={openDeleteProjectDialog}
           onOpenChange={setOpenDeleteProjectDialog}
           title={"Delete project"}
-          description={`Are you sure you want to delete ${project.name}
+          description={`Are you sure you want to delete ${name}
             project?`}
         >
           <div className="flex justify-center gap-x-4">
             <Button
               onClick={() => {
-                deleteProjectMutate(project.id)
+                deleteProjectMutate(id)
                 setOpenDeleteProjectDialog(false)
               }}
             >
@@ -192,19 +192,19 @@ export function Project({ project, currentActiveProject, setCurrentActiveProject
           title={"Edit project"}
           description={"Edit project name and color"}
         >
-          <ProjectForm projectToUpdate={project} flag="update" setOpenDialog={setOpenEditProjectContextDialog} />
+          <ProjectForm project={project} setOpenDialog={setOpenEditProjectContextDialog} />
         </DialogWrapper>
         <DialogWrapper
           open={openDeleteProjectContextDialog}
           onOpenChange={setOpenDeleteProjectContextDialog}
           title={"Delete project"}
-          description={`Are you sure you want to delete ${project.name}
+          description={`Are you sure you want to delete ${name}
             project?`}
         >
           <div className="flex justify-center gap-x-4">
             <Button
               onClick={() => {
-                deleteProjectMutate(project.id)
+                deleteProjectMutate(id)
                 setOpenDeleteProjectContextDialog(false)
               }}
             >
